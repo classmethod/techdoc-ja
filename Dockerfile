@@ -1,4 +1,4 @@
-FROM node:9.3.0
+FROM node:10.5.0
 
 LABEL maintainer "Daisuke Miyamoto <miyamoto.daisuke@classmethod.jp>"
 
