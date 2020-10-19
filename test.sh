@@ -25,6 +25,6 @@ docker run -v $PWD:/src $dockerImage redpen -v &>/dev/null || (echo "redpen fail
 docker run -v $PWD:/src $dockerImage textlint -v &>/dev/null || (echo "textlint failed" && exit 1)
 docker run -v $PWD:/src $dockerImage markdownlint -V &>/dev/null || (echo "markdownlint failed" && exit 1)
 
-docker run -v $PWD:/src $dockerImage gitbook &>/dev/null || (echo "gitbook failed" && exit 1)
+#docker run -v $PWD:/src $dockerImage gitbook &>/dev/null || (echo "gitbook failed" && exit 1)
 docker run -v $PWD:/src $dockerImage ebook-convert --version &>/dev/null || (echo "ebook-convert failed" && exit 1)
 

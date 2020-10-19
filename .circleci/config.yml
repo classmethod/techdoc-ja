@@ -34,3 +34,74 @@ jobs:
           key: v1-{{ .Branch }}-{{ epoch }}
           paths:
             - /caches/image.tar
+  release-docker-image:
+    docker:
+      - image: circleci/python:3.8.6
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          name: Install awscli
+          command: sudo pip install awscli
+      - run:
+          name: Login ECR repository
+          command: eval $(aws ecr get-login --region ${AWS_DEFAULT_REGION} --no-include-email)
+      - run:
+          name: Docker builld
+          command: docker build . -t ${CIRCLE_SHA1}
+      - run:
+          name: Push with version tag
+          command: |
+            version=$(git describe --abbrev=7)
+
+            # タグが打たれたコミットではないならSNAPSHOTを後ろにつける
+            if [ -z ${CIRCLE_TAG} ]
+            then
+              version=${version}-SNAPSHOT
+            fi
+
+            # gitのstatusがcleanでなければdirtyを後ろにつける
+            if [ ! -z $(git status --porcelain) ]
+            then
+              version=${version}+dirty
+            fi
+
+            echo "Tag: ${version}"
+
+            docker tag ${CIRCLE_SHA1} ${ECR_ACCOUNT_URL}/jp.classmethod.aws.metropolis/techdoc-ja:${version}
+            docker push ${ECR_ACCOUNT_URL}/jp.classmethod.aws.metropolis/techdoc-ja:${version}
+      - run:
+          name: Push with branch name or "latest"
+          command: |
+            # タグ付き、かつ、masterブランチのHEAD場合はlatestタグ
+            # それ以外のタグ付き(サポートブランチ等)は何もしない。それ以外はブランチ名をベースにタグを付ける
+            if [ -n "${CIRCLE_TAG}" -a `git rev-parse HEAD` = `git rev-parse origin/master` ]
+            then
+              branch_tag=latest
+            elif [ -n "${CIRCLE_TAG}" ]; then
+              echo "Skip branch name taging."
+              exit 0;
+            else
+              branch_tag=$(echo $CIRCLE_BRANCH | sed -e 's/\//_/g')
+            fi
+
+            echo "Tag: ${branch_tag}"
+
+            docker tag ${CIRCLE_SHA1} ${ECR_ACCOUNT_URL}/jp.classmethod.aws.metropolis/techdoc-ja:${branch_tag}
+            docker push ${ECR_ACCOUNT_URL}/jp.classmethod.aws.metropolis/techdoc-ja:${branch_tag}
+
+workflows:
+  version: 2
+  all:
+    jobs:
+      - build:
+          filters:
+            tags:
+              only: /.*/
+      - release-docker-image:
+          context: pz-docker-release-context
+          requires:
+            - build
+          filters:
+            tags:
+              only: /.*/

@@ -22,13 +22,12 @@
 
 - Node.js v9.3.0
 - OpenJDK 1.8.0_131
-- RedPen 1.10.1
-- textlint v10.0.0
-- markdownlint-cli v0.7.1
-- GitBook 3.2.2
+- RedPen 1.10.4
+- textlint v11.8.1
+- markdownlint-cli v0.26.0
 - graphviz version 2.38.0 (20140413.2041)
-- Python/3.4.2
-- aws-cli 1.14.11
+- Python/3.8.6
+- aws-cli 1.18.218
 
 これらをインストールした [Docker イメージ](https://hub.docker.com/r/classmethod/techdoc-ja/)
 およびその[利用方法](usage.md)を、本プロジェクトの成果物とします。
