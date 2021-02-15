@@ -17,7 +17,7 @@ ENV LC_ALL=ja_JP.UTF-8
 RUN localedef -f UTF-8 -i ja_JP ja_JP.utf8
 
 ###############################################################################
-# install Java 8 (for PlantUML, RedPen)
+# install Java 11 (for PlantUML, RedPen)
 
 # 参考: https://qiita.com/PINTO/items/612718c0ce4f1def6c6e
 RUN mkdir -p /usr/share/man/man1 \
@@ -31,9 +31,9 @@ RUN mkdir -p /usr/share/man/man1 \
   && wget -qO - https://adoptopenjdk.jfrog.io/adoptopenjdk/api/gpg/key/public | apt-key add - \
   && add-apt-repository 'deb https://adoptopenjdk.jfrog.io/adoptopenjdk/deb/ buster main' \
   && apt-get -y -qq update \
-  && apt-get -y -qq install adoptopenjdk-8-hotspot\
+  && apt-get -y -qq install adoptopenjdk-11-hotspot\
   && add-apt-repository --remove 'deb https://adoptopenjdk.jfrog.io/adoptopenjdk/deb/ buster main' \
-  && update-java-alternatives --jre-headless --jre --set adoptopenjdk-8-hotspot-amd64
+  && update-java-alternatives --jre-headless --jre --set adoptopenjdk-11-hotspot-amd64
 
 ###############################################################################
 # install AWS CLI (for deploy)
@@ -55,8 +55,7 @@ RUN apt-get update \
 RUN pip3 install mkdocs \
   && pip3 install mkdocs-material \
   && pip3 install mkpdfs-mkdocs \
-  && pip3 install plantuml-markdown \
-  && pip3 install fontawesome_markdown
+  && pip3 install plantuml-markdown
 
 ###############################################################################
 # install markdownlint
